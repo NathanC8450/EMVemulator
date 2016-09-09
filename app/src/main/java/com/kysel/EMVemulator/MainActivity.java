@@ -13,7 +13,6 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -47,7 +46,7 @@ public class MainActivity extends Activity {
         progress = (TextView) findViewById(R.id.progress);
         cardType = (TextView) findViewById(R.id.cardType);
         cardNumber = (TextView) findViewById(R.id.cardNumber);
-        cardExpiration = (TextView) findViewById(R.id.cardExipration);
+        cardExpiration = (TextView) findViewById(R.id.cardExpiration);
     }
 
     @Override
@@ -100,16 +99,16 @@ public class MainActivity extends Activity {
             try {
                 tagcomm.connect();
             } catch (IOException e) {
-                Log.i("EMVemulator", "Error tagcomm");
-                error = "Reading card data ... Error tagcomm";
+                Log.i("EMVemulator", "Error tagcomm: " + e.getMessage());
+                error = "Reading card data ... Error tagcomm: " + e.getMessage();
                 return null;
             }
             try {
                 readCard();
                 tagcomm.close();
             } catch (IOException e) {
-                Log.i("EMVemulator", "Error tranceive");
-                error = "Reading card data ... Error tranceive";
+                Log.i("EMVemulator", "Error tranceive: " + e.getMessage());
+                error = "Reading card data ... Error tranceive: " + e.getMessage();
                 return null;
             }
             return null;
@@ -122,9 +121,7 @@ public class MainActivity extends Activity {
              */
             try {
                 String temp;
-                File myFile = new File("/storage/sdcard0/Download/EMV.card");
-                myFile.createNewFile();
-                FileOutputStream fOut = new FileOutputStream(myFile);
+                FileOutputStream fOut = openFileOutput("EMV.card", MODE_PRIVATE);
                 OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
                 byte[] recv = transceive("00 A4 04 00 0E 32 50 41 59 2E 53 59 53 2E 44 44 46 30 31 00");
                 myOutWriter.append(Byte2Hex(recv) + "\n");
@@ -169,8 +166,8 @@ public class MainActivity extends Activity {
                 fOut.close();
 
             } catch (IOException e) {
-                Log.i("EMVemulator", "Error readCard");
-                error = "Reading card data ... Error readCard";
+                Log.i("EMVemulator", "Error readCard: " + e.getMessage());
+                error = "Reading card data ... Error readCard: " + e.getMessage();
             }
         }
 
